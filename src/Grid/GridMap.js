@@ -46,6 +46,13 @@ class GridMap {
         this.grid[col][row].setType(state);
     }
 
+    setCellBiome(col, row, biome) {
+        if (!this.isValidLoc(col, row)) {
+            return;
+        }
+        this.grid[col][row].setBiome(biome);
+    }
+
     setCellOwner(col, row, cell_owner) {
         if (!this.isValidLoc(col, row)) {
             return;
@@ -63,6 +70,13 @@ class GridMap {
 
     getCenter(){
         return [Math.floor(this.cols/2), Math.floor(this.rows/2)]
+    }
+
+    getCellBiome(col, row) {
+        if (!this.isValidLoc(col, row)) {
+            return null;
+        }
+        return this.grid[col][row].biome;
     }
 
     xyToColRow(x, y) {

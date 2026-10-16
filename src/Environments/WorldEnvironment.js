@@ -19,6 +19,7 @@ class WorldEnvironment extends Environment{
         this.num_rows = Math.ceil(this.renderer.height / cell_size);
         this.num_cols = Math.ceil(this.renderer.width / cell_size);
         this.grid_map = new GridMap(this.num_cols, this.num_rows, cell_size);
+        this.generateForestBiome();
         this.organisms = [];
         this.walls = [];
         this.total_mutability = 0;
@@ -140,15 +141,42 @@ class WorldEnvironment extends Environment{
 
     generateFood() {
         var num_food = Math.max(Math.floor(this.grid_map.cols*this.grid_map.rows*Hyperparams.foodDropProb/50000), 1)
-        var prob = Hyperparams.foodDropProb;
-        for (var i=0; i<num_food; i++) {
-            if (Math.random() <= prob){
-                var c=Math.floor(Math.random() * this.grid_map.cols);
-                var r=Math.floor(Math.random() * this.grid_map.rows);
+        //var prob = Hyperparams.foodDropProb;
+        // for (var i=0; i<num_food; i++) {
+        //     if (Math.random() <= prob){
+        //         var c=Math.floor(Math.random() * this.grid_map.cols);
+        //         var r=Math.floor(Math.random() * this.grid_map.rows);
 
-                if (this.grid_map.cellAt(c, r).state == CellStates.empty){
+        //         if (this.grid_map.cellAt(c, r).state == CellStates.empty){
+        //             this.changeCell(c, r, CellStates.food, null);
+        //         }
+        //     }
+        // }
+        for (var i=0; i<num_food; i++) {
+            var c=Math.floor(Math.random() * this.grid_map.cols);
+            var r=Math.floor(Math.random() * this.grid_map.rows);
+            var prob = Hyperparams.foodDropProb;
+            if (this.grid_map.getCellBiome(c, r).state == 'forest') {
+                prob *= Hyperparams.forestBiomeFoodMultiplier; // multiply the probability of food dropping in forest biome x3
+            }   
+            if (Math.random() <= prob) { 
+                if (this.grid_map.cellAt(c, r).state == CellStates.empty){ // if not forest biome - normal food rate
                     this.changeCell(c, r, CellStates.food, null);
                 }
+            }
+        }
+    }
+    generateForestBiome() {
+        const forestArea = 0.25
+        const totalCells = this.grid_map.cols * this.grid_map.rows;
+        const targetForestCells = Math.floor(totalCells * forestArea);
+        // forest biome will be top left of the grid, so we can just iterate through the grid and set the biome for the first targetForestCells cells
+        const forestWidth = this.grid_map.cols;
+        const forestHeight = Math.min(this.grid_map.rows, Math.ceil(targetForestCells / forestWidth));
+
+        for (var i=0; i<forestWidth; i++) {
+            for (var j=0; j<forestHeight; j++) {
+                this.grid_map.setCellBiome(i, j, 'forest');
             }
         }
     }
