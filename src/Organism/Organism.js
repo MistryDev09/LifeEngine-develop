@@ -7,6 +7,15 @@ const Brain = require("./Perception/Brain");
 const FossilRecord = require("../Stats/FossilRecord");
 const SerializeHelper = require("../Utils/SerializeHelper");
 
+// Hard limits on the life history genes. These stop a gene running away to
+// zero or infinity, they are not a fitness cost: within the range no value is
+// penalised by the engine in any way.
+const GeneBounds = {
+    repro_threshold: [0.3, 3.0],
+    lifespan_factor: [0.3, 3.0],
+    dispersal: [0.5, 4.0],
+};
+
 class Organism {
     constructor(col, row, env, parent=null) {
         this.c = col;
@@ -22,6 +31,10 @@ class Organism {
         this.move_range = 4;
         this.ignore_brain_for = 0;
         this.mutability = 5;
+        // Life history genes, inherited and mutated like mutability is.
+        this.repro_threshold = 1.0; // scales the food needed before reproducing
+        this.lifespan_factor = 1.0; // scales how many ticks the organism lives
+        this.dispersal = 1.0;       // scales how far offspring are placed
         this.damage = 0;
         this.brain = new Brain(this);
         if (parent != null) {
@@ -32,6 +45,9 @@ class Organism {
     inherit(parent) {
         this.move_range = parent.move_range;
         this.mutability = parent.mutability;
+        this.repro_threshold = parent.repro_threshold;
+        this.lifespan_factor = parent.lifespan_factor;
+        this.dispersal = parent.dispersal;
         this.species = parent.species;
         for (var c of parent.anatomy.cells){
             //deep copy parent cells
@@ -40,13 +56,37 @@ class Organism {
         this.brain.copy(parent.brain);
     }
 
+    // Life history genes are always read through these three getters so that a
+    // single switch can pin the whole population to fixed values.
+    reproThreshold() {
+        return Hyperparams.useGlobalLifeHistory ? Hyperparams.globalReproThreshold : this.repro_threshold;
+    }
+
+    lifespanFactor() {
+        return Hyperparams.useGlobalLifeHistory ? Hyperparams.globalLifespanFactor : this.lifespan_factor;
+    }
+
+    dispersalRange() {
+        return Hyperparams.useGlobalLifeHistory ? Hyperparams.globalDispersal : this.dispersal;
+    }
+
+    // Multiplicative random walk, clamped to the gene's bounds.
+    driftGene(value, bounds) {
+        var step = Hyperparams.lifeHistoryStep / 100;
+        value *= 1 + (((Math.random() * 2) - 1) * step);
+        return Math.min(bounds[1], Math.max(bounds[0], value));
+    }
+
     // amount of food required before it can reproduce
     foodNeeded() {
-        return this.anatomy.is_mover ? this.anatomy.cells.length + Hyperparams.extraMoverFoodCost : this.anatomy.cells.length;
+        var base = this.anatomy.cells.length * this.reproThreshold();
+        if (this.anatomy.is_mover)
+            base += Hyperparams.extraMoverFoodCost;
+        return Math.max(1, Math.ceil(base));
     }
 
     lifespan() {
-        return this.anatomy.cells.length * Hyperparams.lifespanMultiplier;
+        return Math.max(1, Math.floor(this.anatomy.cells.length * Hyperparams.lifespanMultiplier * this.lifespanFactor()));
     }
 
     maxHealth() {
@@ -73,7 +113,13 @@ class Organism {
                 if (org.mutability < 1)
                     org.mutability = 1;
             }
-        } 
+        }
+        if (!Hyperparams.useGlobalLifeHistory) {
+            // the genes take a small step at every birth, exactly as mutability does above
+            org.repro_threshold = this.driftGene(org.repro_threshold, GeneBounds.repro_threshold);
+            org.lifespan_factor = this.driftGene(org.lifespan_factor, GeneBounds.lifespan_factor);
+            org.dispersal = this.driftGene(org.dispersal, GeneBounds.dispersal);
+        }
         var mutated = false;
         if (this.calcRandomChance(prob)) {
             mutated = org.mutate();
@@ -82,7 +128,8 @@ class Organism {
         var direction = Directions.getRandomScalar();
         var direction_c = direction[0];
         var direction_r = direction[1];
-        var offset = (Math.floor(Math.random() * 3));
+        var spread = Math.max(1, Math.round(3 * this.dispersalRange()));
+        var offset = (Math.floor(Math.random() * spread));
         var basemovement = this.anatomy.birth_distance;
         var new_c = this.c + (direction_c*basemovement) + (direction_c*offset);
         var new_r = this.r + (direction_r*basemovement) + (direction_r*offset);

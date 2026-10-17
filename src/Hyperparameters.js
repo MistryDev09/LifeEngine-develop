@@ -8,6 +8,16 @@ const Hyperparams = {
         this.edibleNeighbors = Neighbors.adjacent;
         this.growableNeighbors = Neighbors.adjacent;
 
+        // Life history genes. When useGlobalLifeHistory is true every organism
+        // is pinned to the global* values below, which is how control runs andV
+        // re-invasion tests are set up. When false the genes are inherited and
+        // drift by up to lifeHistoryStep percent at every birth.
+        this.useGlobalLifeHistory = false;
+        this.lifeHistoryStep = 3;
+        this.globalReproThreshold = 1.0;
+        this.globalLifespanFactor = 1.0;
+        this.globalDispersal = 1.0;
+
         this.useGlobalMutability = false;
         this.globalMutability = 5;
         this.addProb = 25;
