@@ -22,6 +22,9 @@ class WorldEnvironment extends Environment{
         this.organisms = [];
         this.walls = [];
         this.total_mutability = 0;
+        this.total_repro_threshold = 0;
+        this.total_lifespan_factor = 0;
+        this.total_dispersal = 0;
         this.largest_cell_count = 0;
         this.reset_count = 0;
         this.total_ticks = 0;
@@ -64,6 +67,9 @@ class WorldEnvironment extends Environment{
         let start_pop = this.organisms.length;
         for (var i of org_indeces.reverse()){
             this.total_mutability -= this.organisms[i].mutability;
+            this.total_repro_threshold -= this.organisms[i].repro_threshold;
+            this.total_lifespan_factor -= this.organisms[i].lifespan_factor;
+            this.total_dispersal -= this.organisms[i].dispersal;
             this.organisms.splice(i, 1);
         }
         if (this.organisms.length === 0 && start_pop > 0) {
@@ -89,6 +95,9 @@ class WorldEnvironment extends Environment{
     addOrganism(organism) {
         organism.updateGrid();
         this.total_mutability += organism.mutability;
+        this.total_repro_threshold += organism.repro_threshold;
+        this.total_lifespan_factor += organism.lifespan_factor;
+        this.total_dispersal += organism.dispersal;
         this.organisms.push(organism);
         if (organism.anatomy.cells.length > this.largest_cell_count) 
             this.largest_cell_count = organism.anatomy.cells.length;
@@ -105,6 +114,26 @@ class WorldEnvironment extends Environment{
             return Hyperparams.globalMutability;
         }
         return this.total_mutability / this.organisms.length;
+    }
+
+    // Population means of the life history genes, recorded every
+    // data_update_rate ticks so they can be plotted against population size.
+    averageLifeHistory() {
+        if (Hyperparams.useGlobalLifeHistory) {
+            return {
+                repro_threshold: Number(Hyperparams.globalReproThreshold),
+                lifespan_factor: Number(Hyperparams.globalLifespanFactor),
+                dispersal: Number(Hyperparams.globalDispersal),
+            };
+        }
+        if (this.organisms.length < 1) {
+            return {repro_threshold: 0, lifespan_factor: 0, dispersal: 0};
+        }
+        return {
+            repro_threshold: this.total_repro_threshold / this.organisms.length,
+            lifespan_factor: this.total_lifespan_factor / this.organisms.length,
+            dispersal: this.total_dispersal / this.organisms.length,
+        };
     }
 
     changeCell(c, r, state, owner) {
@@ -126,6 +155,9 @@ class WorldEnvironment extends Environment{
         for (var org of this.organisms)
             org.die();
         this.organisms = [];
+        this.total_repro_threshold = 0;
+        this.total_lifespan_factor = 0;
+        this.total_dispersal = 0;
     }
     
     clearDeadOrganisms() {
@@ -166,6 +198,9 @@ class WorldEnvironment extends Environment{
         this.grid_map.fillGrid(CellStates.empty, !WorldConfig.clear_walls_on_reset);
         this.renderer.renderFullGrid(this.grid_map.grid);
         this.total_mutability = 0;
+        this.total_repro_threshold = 0;
+        this.total_lifespan_factor = 0;
+        this.total_dispersal = 0;
         this.total_ticks = 0;
         this.largest_cell_count = 0;
         FossilRecord.clear_record();
