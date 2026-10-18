@@ -1,7 +1,7 @@
 const getFossilRecord = () => require("./FossilRecord");
 
 const SpeciesTracker = {
-    lineage: {}, // species id -> { id, name, anatomy }
+    lineage: {}, // species id -> the Species object, kept after the species dies
     history: {}, // species id -> list of [tick, population], for every species
     tracked: {}, // species id -> true
 
@@ -17,15 +17,7 @@ const SpeciesTracker = {
             species.id = species.name;
         }
         if (!this.lineage[species.id]) {
-            this.lineage[species.id] = { id: species.id, name: species.name, anatomy: species.anatomy };
-        }
-    },
-
-    // called whenever a species is renamed.
-    rename(species) {
-        const entry = this.lineage[species.id];
-        if (entry) {
-            entry.name = species.name;
+            this.lineage[species.id] = species;
         }
     },
 
@@ -81,8 +73,8 @@ const SpeciesTracker = {
         return highest;
     },
 
-    // which species the chart and the panel show. Top 5
-    visibleIds() {
+    // the ids of the species with the highest latest population, not counting dead ones
+    topIds(count) {
         const alive = [];
         for (const id in this.history) {
             if (this.latest(id) > 0) {
@@ -90,7 +82,12 @@ const SpeciesTracker = {
             }
         }
         alive.sort((a, b) => this.latest(b) - this.latest(a));
-        return alive.slice(0, 5);
+        return alive.slice(0, count);
+    },
+
+    // which species the chart and the panel show. For now: the top 5
+    visibleIds() {
+        return this.topIds(5);
     },
 
     // the same colour every time for the same species, used for the chart line

@@ -45,7 +45,7 @@ const FossilRecord = {
         delete this.extant_species[species.name];
         species.name = new_name;
         this.extant_species[new_name] = species;
-        SpeciesTracker.rename(species);
+        SpeciesTracker.register(species);
     },
 
     numExtantSpecies() {return Object.values(this.extant_species).length},
