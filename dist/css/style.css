@@ -518,3 +518,4 @@ input:hover,input:active {
 #tracking { grid-column: 1 / span 2; }
 #species-tree ul { list-style: none; padding-left: 18px; }
 .tab#stats { max-height: 230px; } /* the tab scrolls, so the tracking panel below the chart can be reached */
+#species-tree canvas { max-width: 60px; max-height: 60px; image-rendering: pixelated; vertical-align: middle; margin-right: 6px; }

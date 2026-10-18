@@ -4,11 +4,13 @@ const SpeciesTracker = {
     lineage: {}, // species id -> the Species object, kept after the species dies
     history: {}, // species id -> list of [tick, population], for every species
     tracked: {}, // species id -> true
+    parents: {}, // species id -> the id of its parent species
 
     reset() {
         this.lineage = {};
         this.history = {};
         this.tracked = {};
+        this.parents = {};
     },
 
     // called whenever a species enters the world.
@@ -18,7 +20,19 @@ const SpeciesTracker = {
         }
         if (!this.lineage[species.id]) {
             this.lineage[species.id] = species;
+            if (parent_species) {
+                this.parents[species.id] = parent_species.id;
+            }
         }
+    },
+
+    // walks up the family history until it finds a tracked species from the list
+    nearestTrackedAncestor(id) {
+        let ancestor_id = this.parents[id];
+        while (ancestor_id && !this.isTracked(ancestor_id)) {
+            ancestor_id = this.parents[ancestor_id];
+        }
+        return ancestor_id || null;
     },
 
     isTracked(id) {
