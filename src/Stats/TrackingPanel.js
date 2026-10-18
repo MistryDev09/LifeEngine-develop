@@ -16,10 +16,6 @@ const TrackingPanel = {
             }
             this.onChange();
         });
-        $('#track-top').click(() => {
-            SpeciesTracker.trackTop(5);
-            this.onChange();
-        });
         $('#track-clear').click(() => {
             SpeciesTracker.untrackAll();
             this.onChange();
@@ -57,7 +53,15 @@ const TrackingPanel = {
         if (tracked) {
             row.append($('<span class="swatch">').css('background', SpeciesTracker.color(id)));
         }
-        row.append(OrganismPicture.draw(species.anatomy));
+        const picture = $(OrganismPicture.draw(species.anatomy));
+        if (!tracked) {
+            picture.css('cursor', 'pointer'); // clicking the picture of an untracked species tracks it
+            picture.click(() => {
+                SpeciesTracker.track(id);
+                this.onChange();
+            });
+        }
+        row.append(picture);
 
         let status;
         if (species.extinct) {

@@ -125,13 +125,6 @@ const SpeciesTracker = {
         this.tracked = {};
     },
 
-    // track top 5
-    trackTop(count) {
-        for (const id of this.topIds(count)) {
-            this.track(id);
-        }
-    },
-
     // the same colour every time for the same species, used for the chart line
     color(id) {
         let hue = 0;
