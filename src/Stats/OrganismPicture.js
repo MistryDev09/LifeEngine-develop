@@ -1,4 +1,4 @@
-const CELL_PIXELS = 6; // size of one body cell in a picture
+const CELL_PIXELS = 10; // size of one body cell in a picture
 
 const OrganismPicture = {
     // draws an anatomy on a canvas, centred on the organism's first cell
