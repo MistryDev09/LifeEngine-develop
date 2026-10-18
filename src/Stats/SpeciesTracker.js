@@ -85,9 +85,31 @@ const SpeciesTracker = {
         return alive.slice(0, count);
     },
 
-    // which species the chart and the panel show. For now: the top 5
+    // which species the chart and the panel show: the tracked ones
     visibleIds() {
-        return this.topIds(5);
+        return Object.keys(this.tracked);
+    },
+
+    // show the tracked species even if dead
+    track(id) {
+        this.tracked[id] = true;
+    },
+
+    // remove from list
+    untrack(id) {
+        delete this.tracked[id];
+    },
+
+    // delete tracked list
+    untrackAll() {
+        this.tracked = {};
+    },
+
+    // track top 5
+    trackTop(count) {
+        for (const id of this.topIds(count)) {
+            this.track(id);
+        }
     },
 
     // the same colour every time for the same species, used for the chart line
