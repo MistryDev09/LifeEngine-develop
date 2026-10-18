@@ -4,6 +4,7 @@ const MutationChart = require("./Charts/MutationChart");
 const CellsChart = require("./Charts/CellsChart");
 const FossilRecord = require("./FossilRecord");
 const SpeciesPopulationChart = require("./Charts/SpeciesPopulationChart");
+const TrackingPanel = require("./TrackingPanel");
 
 
 const ChartSelections = [PopulationChart, SpeciesChart, CellsChart, MutationChart];
@@ -12,6 +13,7 @@ ChartSelections.push(SpeciesPopulationChart); // index 4, existing indexes uncha
 class StatsPanel {
     constructor(env) {
         this.defineControls();
+        TrackingPanel.init(() => this.updateChart());
         this.chart_selection = 0;
         this.setChart();
         this.env = env;
@@ -48,6 +50,7 @@ class StatsPanel {
         this.last_reset_count = this.env.reset_count;
         this.chart_controller.updateData();
         this.chart_controller.render();
+        TrackingPanel.render();
     }
 
     updateDetails() {
@@ -65,6 +68,7 @@ class StatsPanel {
 
     reset() {
         this.setChart();
+        TrackingPanel.render();
     }
     
 }
