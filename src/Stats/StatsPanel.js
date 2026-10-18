@@ -3,9 +3,11 @@ const SpeciesChart = require("./Charts/SpeciesChart");
 const MutationChart = require("./Charts/MutationChart");
 const CellsChart = require("./Charts/CellsChart");
 const FossilRecord = require("./FossilRecord");
+const SpeciesPopulationChart = require("./Charts/SpeciesPopulationChart");
 
 
 const ChartSelections = [PopulationChart, SpeciesChart, CellsChart, MutationChart];
+ChartSelections.push(SpeciesPopulationChart); // index 4, existing indexes unchanged
 
 class StatsPanel {
     constructor(env) {
