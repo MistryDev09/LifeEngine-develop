@@ -5,12 +5,14 @@ const SpeciesTracker = {
     history: {}, // species id -> list of [tick, population], for every species
     tracked: {}, // species id -> true
     parents: {}, // species id -> the id of its parent species
+    children: {}, // species id -> list of the ids of its child species
 
     reset() {
         this.lineage = {};
         this.history = {};
         this.tracked = {};
         this.parents = {};
+        this.children = {};
     },
 
     // called whenever a species enters the world.
@@ -22,6 +24,10 @@ const SpeciesTracker = {
             this.lineage[species.id] = species;
             if (parent_species) {
                 this.parents[species.id] = parent_species.id;
+                if (!this.children[parent_species.id]) {
+                    this.children[parent_species.id] = [];
+                }
+                this.children[parent_species.id].push(species.id);
             }
         }
     },

@@ -26,27 +26,37 @@ const TrackingPanel = {
         });
     },
 
-    // redraws the tree
+    // redraws the whole tree: one family for each tracked species that is not inside another tracked family
     render() {
-        $('#species-tree').empty().append(this.makeList(null));
+        const roots = [];
+        for (const id in SpeciesTracker.tracked) {
+            if (SpeciesTracker.nearestTrackedAncestor(id) === null) {
+                roots.push(id);
+            }
+        }
+        $('#species-tree').empty().append(this.makeList(roots));
     },
 
-    // build the tree rows
-    makeList(parent_id) {
+    // a list with a row for each of the given species that is tracked or big enough to show
+    makeList(ids) {
         const list = $('<ul>');
-        for (const id in SpeciesTracker.tracked) {
-            if (SpeciesTracker.nearestTrackedAncestor(id) === parent_id) {
+        for (const id of ids) {
+            const species = SpeciesTracker.lineage[id];
+            if (SpeciesTracker.isTracked(id) || species.cumulative_pop >= FossilRecord.min_discard) {
                 list.append(this.makeRow(id));
             }
         }
         return list;
     },
 
-    // for one tracked species: dot, picture, ticks, remove button, then its descendants
+    // one species: dot, picture, ticks, remove button (tracked species only), then its descendants
     makeRow(id) {
         const species = SpeciesTracker.lineage[id];
+        const tracked = SpeciesTracker.isTracked(id);
         const row = $('<li>').attr('title', species.name); // the name shows on hover
-        row.append($('<span class="swatch">').css('background', SpeciesTracker.color(id)));
+        if (tracked) {
+            row.append($('<span class="swatch">').css('background', SpeciesTracker.color(id)));
+        }
         row.append(OrganismPicture.draw(species.anatomy));
 
         let status;
@@ -57,13 +67,15 @@ const TrackingPanel = {
         }
         row.append($('<span>').text(status));
 
-        const remove = $('<button>').text('✕');
-        remove.click(() => {
-            SpeciesTracker.untrack(id);
-            this.onChange();
-        });
-        row.append(remove);
-        row.append(this.makeList(id));
+        if (tracked) {
+            const remove = $('<button>').text('✕');
+            remove.click(() => {
+                SpeciesTracker.untrack(id);
+                this.onChange();
+            });
+            row.append(remove);
+        }
+        row.append(this.makeList(SpeciesTracker.children[id] || []));
         return row;
     },
 };
