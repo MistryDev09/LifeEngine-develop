@@ -45,7 +45,7 @@ class GridMap {
         }
         this.grid[col][row].setType(state);
     }
-
+    // Set the biome of a specific cell in the grid
     setCellBiome(col, row, biome) {
         if (!this.isValidLoc(col, row)) {
             return;
