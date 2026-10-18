@@ -1,7 +1,7 @@
 const getFossilRecord = () => require("./FossilRecord");
 
 const SpeciesTracker = {
-    lineage: {}, // species id -> { id, name }
+    lineage: {}, // species id -> { id, name, anatomy }
     history: {}, // species id -> list of [tick, population], for every species
     tracked: {}, // species id -> true
 
@@ -17,7 +17,7 @@ const SpeciesTracker = {
             species.id = species.name;
         }
         if (!this.lineage[species.id]) {
-            this.lineage[species.id] = { id: species.id, name: species.name };
+            this.lineage[species.id] = { id: species.id, name: species.name, anatomy: species.anatomy };
         }
     },
 

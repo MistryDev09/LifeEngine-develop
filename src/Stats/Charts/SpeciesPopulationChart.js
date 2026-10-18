@@ -1,5 +1,6 @@
 const SpeciesTracker = require("../SpeciesTracker");
 const ChartController = require("./ChartController");
+const OrganismPicture = require("../OrganismPicture");
 
 class SpeciesPopulationChart extends ChartController {
     constructor() {
@@ -21,9 +22,8 @@ class SpeciesPopulationChart extends ChartController {
                 type: "line",
                 markerType: "none",
                 color: SpeciesTracker.color(id),
-                showInLegend: true,
+                showInLegend: false, // the legend is drawn by drawLegend()
                 name: id,
-                legendText: SpeciesTracker.lineage[id].name,
                 dataPoints: data_points
             });
         }
@@ -32,6 +32,24 @@ class SpeciesPopulationChart extends ChartController {
     // rebuild the whole chart each time instead of adding points
     updateData() {
         this.setData();
+    }
+
+    // the base class draws the chart, then the legend is drawn under it
+    render() {
+        super.render();
+        this.drawLegend();
+    }
+
+    // one item per species: a colour dot and a picture of the body
+    drawLegend() {
+        const legend = $('#species-legend').empty();
+        for (const id of SpeciesTracker.visibleIds()) {
+            const entry = SpeciesTracker.lineage[id];
+            const item = $('<span class="legend-item">').attr('title', entry.name); // the name shows on hover
+            item.append($('<span class="swatch">').css('background', SpeciesTracker.color(id)));
+            item.append(OrganismPicture.draw(entry.anatomy));
+            legend.append(item);
+        }
     }
 
     // assume 1 line

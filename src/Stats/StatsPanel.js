@@ -19,6 +19,7 @@ class StatsPanel {
     }
 
     setChart(selection=this.chart_selection) {
+        $('#species-legend').empty(); // only the species chart draws a legend here
         this.chart_controller = new ChartSelections[selection]();
         this.chart_controller.setData();
         this.chart_controller.render();
