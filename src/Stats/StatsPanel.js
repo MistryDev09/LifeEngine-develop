@@ -2,6 +2,7 @@ const PopulationChart = require("./Charts/PopulationChart");
 const SpeciesChart = require("./Charts/SpeciesChart");
 const MutationChart = require("./Charts/MutationChart");
 const CellsChart = require("./Charts/CellsChart");
+const LifeHistoryChart = require("./Charts/LifeHistoryChart");
 const FossilRecord = require("./FossilRecord");
 const SpeciesPopulationChart = require("./Charts/SpeciesPopulationChart");
 const TrackingPanel = require("./TrackingPanel");
@@ -9,6 +10,7 @@ const TrackingPanel = require("./TrackingPanel");
 
 const ChartSelections = [PopulationChart, SpeciesChart, CellsChart, MutationChart];
 ChartSelections.push(SpeciesPopulationChart); // index 4, existing indexes unchanged
+ChartSelections.push(LifeHistoryChart);
 
 class StatsPanel {
     constructor(env) {
@@ -64,6 +66,11 @@ class StatsPanel {
             $('#top-species').text("Most Populous Species: None");
         $('#largest-org').text("Largest Organism Ever: " + this.env.largest_cell_count + " cells");
         $('#avg-mut').text("Average Mutation Rate: " + Math.round(this.env.averageMutability() * 100) / 100);
+        let lh = this.env.averageLifeHistory();
+        $('#avg-life-history').text("Life History (repro/lifespan/dispersal): "
+            + Math.round(lh.repro_threshold * 1000) / 1000 + " / "
+            + Math.round(lh.lifespan_factor * 1000) / 1000 + " / "
+            + Math.round(lh.dispersal * 1000) / 1000);
     }
 
     reset() {
