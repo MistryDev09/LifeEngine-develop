@@ -50,12 +50,12 @@ class Renderer {
 
     renderCell(cell) {
         if (cell.state === CellStates.empty && cell.biome === 'forest') {
-            this.ctx.fillStyle = '#7d947d'; // forest green for empty cells in forest biome
+            this.ctx.fillStyle = '#394739'; // forest green for empty cells in forest biome
             this.ctx.fillRect(cell.x, cell.y, this.cell_size, this.cell_size);
             return; // skip rendering the cell state if it's empty and in a forest biome
         }
         if (cell.state === CellStates.empty && cell.biome === 'desert') {
-            this.ctx.fillStyle = '#edc9af'; // desert sand color for empty cells in desert biome
+            this.ctx.fillStyle = '#46362b'; // desert sand color for empty cells in desert biome
             this.ctx.fillRect(cell.x, cell.y, this.cell_size, this.cell_size);
             return; 
         }
