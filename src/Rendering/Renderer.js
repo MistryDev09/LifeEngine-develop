@@ -49,8 +49,19 @@ class Renderer {
     }
 
     renderCell(cell) {
-        cell.state.render(this.ctx, cell, this.cell_size);
+        if (cell.state === CellStates.empty && cell.biome === 'forest') {
+            this.ctx.fillStyle = '#7d947d'; // forest green for empty cells in forest biome
+            this.ctx.fillRect(cell.x, cell.y, this.cell_size, this.cell_size);
+            return; // skip rendering the cell state if it's empty and in a forest biome
+        }
+        if (cell.state === CellStates.empty && cell.biome === 'desert') {
+            this.ctx.fillStyle = '#edc9af'; // desert sand color for empty cells in desert biome
+            this.ctx.fillRect(cell.x, cell.y, this.cell_size, this.cell_size);
+            return; 
+        }
+            cell.state.render(this.ctx, cell, this.cell_size);
     }
+    
 
     renderOrganism(org) {
         for(var org_cell of org.anatomy.cells) {

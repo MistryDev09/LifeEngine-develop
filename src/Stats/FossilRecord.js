@@ -1,6 +1,7 @@
 const CellStates = require("../Organism/Cell/CellStates");
 const SerializeHelper = require("../Utils/SerializeHelper");
 const Species = require("./Species");
+const SpeciesTracker = require("./SpeciesTracker");
 
 const FossilRecord = {
     init: function(){
@@ -22,6 +23,7 @@ const FossilRecord = {
         var new_species = new Species(org.anatomy, ancestor, this.env.total_ticks);
         this.extant_species[new_species.name] = new_species;
         org.species = new_species;
+        SpeciesTracker.register(new_species, ancestor);
         return new_species;
     },
 
@@ -31,6 +33,7 @@ const FossilRecord = {
             return;
         }
         this.extant_species[species.name] = species;
+        SpeciesTracker.register(species);
         return species;
     },
 
@@ -42,6 +45,7 @@ const FossilRecord = {
         delete this.extant_species[species.name];
         species.name = new_name;
         this.extant_species[new_name] = species;
+        SpeciesTracker.register(species);
     },
 
     numExtantSpecies() {return Object.values(this.extant_species).length},
@@ -88,6 +92,7 @@ const FossilRecord = {
         this.pop_counts.push(this.env.organisms.length);
         this.species_counts.push(this.numExtantSpecies());
         this.av_mut_rates.push(this.env.averageMutability());
+        SpeciesTracker.record();
         this.calcCellCountAverages();
         while (this.tick_record.length > this.record_size_limit) {
             this.tick_record.shift();
@@ -146,6 +151,7 @@ const FossilRecord = {
     clear_record() {
         this.extant_species = [];
         this.extinct_species = [];
+        SpeciesTracker.reset();
         this.setData();
     },
 

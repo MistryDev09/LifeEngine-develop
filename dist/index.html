@@ -259,11 +259,21 @@
 							<option value="species">Species</option>
 							<option value="mut-rate">Organism Structure</option>
 							<option value="mut-rate">Mutation Rate</option>
+							<option value="species-populations">Species Populations</option>
 						</select>
 						<p id='chart-note'></p>
 					</div>
 					<div class='right-half'>
 						<div id="chartContainer"></div>
+						<div id="species-legend"></div>
+					</div>
+					<div id='tracking'>
+						<input id="track-search" placeholder="Species name">
+						<button id="track-add">Track</button>
+						<button id="track-clear">Clear</button>
+						<button id="track-extinct">Show extinct</button>
+						<span id="species-name"></span>
+						<div id="species-tree"></div>
 					</div>
 				</div>
 			</div>

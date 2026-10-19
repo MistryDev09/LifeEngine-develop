@@ -4,6 +4,8 @@ const Hyperparams = {
     setDefaults: function() {
         this.lifespanMultiplier = 100;
         this.foodProdProb = 5;
+        this.forestBiomeFoodMultiplier = 2; 
+        this.desertBiomeFoodMultiplier = 0.5;
         this.killableNeighbors = Neighbors.adjacent;
         this.edibleNeighbors = Neighbors.adjacent;
         this.growableNeighbors = Neighbors.adjacent;
@@ -28,7 +30,8 @@ const Hyperparams = {
         this.seeThroughSelf = false;
         this.evolveIndependentEyeDecisions = true;
 
-        this.foodDropProb = 0;
+        //this.foodDropProb = 0.01;
+        this.foodDropProb = 0; 
 
         this.extraMoverFoodCost = 0;
 
