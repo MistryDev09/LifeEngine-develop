@@ -7,11 +7,15 @@ class Cell{
         this.col = col;
         this.row = row;
         this.x = x;
-        this.y = y;
+        this.y = y; 
+        this.biome = null; // default biome null 
     }
 
     setType(state) {
         this.state = state;
+    }
+    setBiome(biome) {
+        this.biome = biome;
     }
 }
 

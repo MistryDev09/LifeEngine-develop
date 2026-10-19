@@ -382,6 +382,27 @@ class ControlPanel {
         $('#global-mutation').change( function() {
             Hyperparams.globalMutability = parseInt($('#global-mutation').val());
         });
+        $('#evolved-life-history').change( function() {
+            if (this.checked) {
+                $('.global-life-history-container').css('display', 'none');
+            }
+            else {
+                $('.global-life-history-container').css('display', 'block');
+            }
+            Hyperparams.useGlobalLifeHistory = !this.checked;
+        });
+        $('#life-history-step').change( function() {
+            Hyperparams.lifeHistoryStep = parseFloat($('#life-history-step').val());
+        });
+        $('#global-repro-threshold').change( function() {
+            Hyperparams.globalReproThreshold = parseFloat($('#global-repro-threshold').val());
+        });
+        $('#global-lifespan-factor').change( function() {
+            Hyperparams.globalLifespanFactor = parseFloat($('#global-lifespan-factor').val());
+        });
+        $('#global-dispersal').change( function() {
+            Hyperparams.globalDispersal = parseFloat($('#global-dispersal').val());
+        });
         $('.mut-prob').change( function() {
             switch(this.id){
                 case "add-prob":
@@ -469,6 +490,17 @@ class ControlPanel {
         $('#look-range').val(Hyperparams.lookRange);
         $('#see-through-self').prop('checked', Hyperparams.seeThroughSelf);
         $('#global-mutation').val(Hyperparams.globalMutability);
+        $('#evolved-life-history').prop('checked', !Hyperparams.useGlobalLifeHistory);
+        $('#life-history-step').val(Hyperparams.lifeHistoryStep);
+        $('#global-repro-threshold').val(Hyperparams.globalReproThreshold);
+        $('#global-lifespan-factor').val(Hyperparams.globalLifespanFactor);
+        $('#global-dispersal').val(Hyperparams.globalDispersal);
+        if (!Hyperparams.useGlobalLifeHistory) {
+            $('.global-life-history-container').css('display', 'none');
+        }
+        else {
+            $('.global-life-history-container').css('display', 'block');
+        }
         $('#independent-eye-decisions').prop('checked', Hyperparams.evolveIndependentEyeDecisions);
         
         if (!Hyperparams.useGlobalMutability) {

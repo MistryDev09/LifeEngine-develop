@@ -1,6 +1,7 @@
 const CellStates = require("../Organism/Cell/CellStates");
 const SerializeHelper = require("../Utils/SerializeHelper");
 const Species = require("./Species");
+const SpeciesTracker = require("./SpeciesTracker");
 
 const FossilRecord = {
     init: function(){
@@ -22,6 +23,7 @@ const FossilRecord = {
         var new_species = new Species(org.anatomy, ancestor, this.env.total_ticks);
         this.extant_species[new_species.name] = new_species;
         org.species = new_species;
+        SpeciesTracker.register(new_species, ancestor);
         return new_species;
     },
 
@@ -31,6 +33,7 @@ const FossilRecord = {
             return;
         }
         this.extant_species[species.name] = species;
+        SpeciesTracker.register(species);
         return species;
     },
 
@@ -42,6 +45,7 @@ const FossilRecord = {
         delete this.extant_species[species.name];
         species.name = new_name;
         this.extant_species[new_name] = species;
+        SpeciesTracker.register(species);
     },
 
     numExtantSpecies() {return Object.values(this.extant_species).length},
@@ -77,6 +81,9 @@ const FossilRecord = {
         this.pop_counts = [];
         this.species_counts = [];
         this.av_mut_rates = [];
+        this.av_repro_threshold = [];
+        this.av_lifespan_factor = [];
+        this.av_dispersal = [];
         this.av_cells = [];
         this.av_cell_counts = [];
         this.updateData();
@@ -88,12 +95,20 @@ const FossilRecord = {
         this.pop_counts.push(this.env.organisms.length);
         this.species_counts.push(this.numExtantSpecies());
         this.av_mut_rates.push(this.env.averageMutability());
+        SpeciesTracker.record();
+        var life_history = this.env.averageLifeHistory();
+        this.av_repro_threshold.push(life_history.repro_threshold);
+        this.av_lifespan_factor.push(life_history.lifespan_factor);
+        this.av_dispersal.push(life_history.dispersal);
         this.calcCellCountAverages();
         while (this.tick_record.length > this.record_size_limit) {
             this.tick_record.shift();
             this.pop_counts.shift();
             this.species_counts.shift();
             this.av_mut_rates.shift();
+            this.av_repro_threshold.shift();
+            this.av_lifespan_factor.shift();
+            this.av_dispersal.shift();
             this.av_cells.shift();
             this.av_cell_counts.shift();
         }
@@ -146,6 +161,7 @@ const FossilRecord = {
     clear_record() {
         this.extant_species = [];
         this.extinct_species = [];
+        SpeciesTracker.reset();
         this.setData();
     },
 
@@ -157,6 +173,9 @@ const FossilRecord = {
             pop_counts:this.pop_counts,
             species_counts:this.species_counts,
             av_mut_rates:this.av_mut_rates,
+            av_repro_threshold:this.av_repro_threshold,
+            av_lifespan_factor:this.av_lifespan_factor,
+            av_dispersal:this.av_dispersal,
             av_cells:this.av_cells,
             av_cell_counts:this.av_cell_counts,
         };

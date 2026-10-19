@@ -20,9 +20,14 @@ class WorldEnvironment extends Environment{
         this.num_rows = Math.ceil(this.renderer.height / cell_size);
         this.num_cols = Math.ceil(this.renderer.width / cell_size);
         this.grid_map = new GridMap(this.num_cols, this.num_rows, cell_size);
+        this.generateForestBiome(); // Generate the forest biome in the grid
+        this.generateDesertBiome(); // Generate the desert biome in the grid
         this.organisms = [];
         this.walls = [];
         this.total_mutability = 0;
+        this.total_repro_threshold = 0;
+        this.total_lifespan_factor = 0;
+        this.total_dispersal = 0;
         this.largest_cell_count = 0;
         this.reset_count = 0;
         this.total_ticks = 0;
@@ -48,6 +53,10 @@ class WorldEnvironment extends Environment{
         if (this.total_ticks % this.data_update_rate == 0) {
             FossilRecord.updateData();
         }
+        var count = this.countFoodByRegion();
+        console.log("Forest food: " + count.forest_food);
+        console.log("Desert food: " + count.desert_food);
+        console.log("Normal food: " + count.normal_food);
     }
 
     render() {
@@ -67,6 +76,9 @@ class WorldEnvironment extends Environment{
         let start_pop = this.organisms.length;
         for (var i of org_indeces.reverse()){
             this.total_mutability -= this.organisms[i].mutability;
+            this.total_repro_threshold -= this.organisms[i].repro_threshold;
+            this.total_lifespan_factor -= this.organisms[i].lifespan_factor;
+            this.total_dispersal -= this.organisms[i].dispersal;
             this.organisms.splice(i, 1);
         }
         if (this.organisms.length === 0 && start_pop > 0) {
@@ -92,6 +104,9 @@ class WorldEnvironment extends Environment{
     addOrganism(organism) {
         organism.updateGrid();
         this.total_mutability += organism.mutability;
+        this.total_repro_threshold += organism.repro_threshold;
+        this.total_lifespan_factor += organism.lifespan_factor;
+        this.total_dispersal += organism.dispersal;
         this.organisms.push(organism);
         if (organism.anatomy.cells.length > this.largest_cell_count) 
             this.largest_cell_count = organism.anatomy.cells.length;
@@ -108,6 +123,26 @@ class WorldEnvironment extends Environment{
             return Hyperparams.globalMutability;
         }
         return this.total_mutability / this.organisms.length;
+    }
+
+    // Population means of the life history genes, recorded every
+    // data_update_rate ticks so they can be plotted against population size.
+    averageLifeHistory() {
+        if (Hyperparams.useGlobalLifeHistory) {
+            return {
+                repro_threshold: Number(Hyperparams.globalReproThreshold),
+                lifespan_factor: Number(Hyperparams.globalLifespanFactor),
+                dispersal: Number(Hyperparams.globalDispersal),
+            };
+        }
+        if (this.organisms.length < 1) {
+            return {repro_threshold: 0, lifespan_factor: 0, dispersal: 0};
+        }
+        return {
+            repro_threshold: this.total_repro_threshold / this.organisms.length,
+            lifespan_factor: this.total_lifespan_factor / this.organisms.length,
+            dispersal: this.total_dispersal / this.organisms.length,
+        };
     }
 
     changeCell(c, r, state, owner) {
@@ -129,6 +164,9 @@ class WorldEnvironment extends Environment{
         for (var org of this.organisms)
             org.die();
         this.organisms = [];
+        this.total_repro_threshold = 0;
+        this.total_lifespan_factor = 0;
+        this.total_dispersal = 0;
     }
     
     clearDeadOrganisms() {
@@ -142,16 +180,69 @@ class WorldEnvironment extends Environment{
     }
 
     generateFood() {
+        console.log("Generating food... ticks: " + this.total_ticks);
         var num_food = Math.max(Math.floor(this.grid_map.cols*this.grid_map.rows*Hyperparams.foodDropProb/50000), 1)
-        var prob = Hyperparams.foodDropProb;
+      
         for (var i=0; i<num_food; i++) {
-            if (Math.random() <= prob){
-                var c=Math.floor(Math.random() * this.grid_map.cols);
-                var r=Math.floor(Math.random() * this.grid_map.rows);
-
-                if (this.grid_map.cellAt(c, r).state == CellStates.empty){
+            var c=Math.floor(Math.random() * this.grid_map.cols);
+            var r=Math.floor(Math.random() * this.grid_map.rows);
+            var prob = Hyperparams.foodDropProb; // change prob depending on biome type
+            var biome = this.grid_map.getCellBiome(c, r);
+            if (biome== 'forest') {
+                prob *= Hyperparams.forestBiomeFoodMultiplier; // multiply the probability of food dropping in forest biome x3
+            }   
+            else if (biome == 'desert') {
+                prob *= Hyperparams.desertBiomeFoodMultiplier; // multiply the probability of food dropping in desert biome x0.5
+            }
+            if (Math.random() <= prob) { 
+                if (this.grid_map.cellAt(c, r).state == CellStates.empty){ // if not forest biome - normal food rate
                     this.changeCell(c, r, CellStates.food, null);
                 }
+            }
+        }
+    }
+    countFoodByRegion() {
+    let forest_food = 0;
+    let desert_food = 0;
+    let normal_food = 0;
+    for (let col of this.grid_map.grid) {
+        for (let cell of col) {
+            if (cell.state === CellStates.food) {
+                if (cell.biome === 'forest') forest_food++;
+                else if (cell.biome === 'desert') desert_food++;
+                else normal_food++;
+            }
+        }
+    }
+    return {forest_food, desert_food, normal_food};
+    }
+    // Biome generation methods
+    generateForestBiome() {
+        const forestArea = 0.33
+        const totalCells = this.grid_map.cols * this.grid_map.rows;
+        const targetForestCells = Math.floor(totalCells * forestArea);
+        // forest biome will be top left of the grid, so we can just iterate through the grid and set the biome for the first targetForestCells cells
+        // will take up top 1/3 of the grid
+        const forestWidth = this.grid_map.cols;
+        const forestHeight = Math.min(this.grid_map.rows, Math.ceil(targetForestCells / forestWidth));
+
+        for (var i=0; i<forestWidth; i++) {
+            for (var j=0; j<forestHeight; j++) {
+                this.grid_map.setCellBiome(i, j, 'forest');
+            }
+        }
+    }
+    generateDesertBiome() {
+        const desertArea = 0.33
+        const totalCells = this.grid_map.cols * this.grid_map.rows;
+        const targetDesertCells = Math.floor(totalCells * desertArea);
+        // desert biome will be bottom 1/3 of the grid
+        const desertWidth = this.grid_map.cols;
+        const desertHeight = Math.min(this.grid_map.rows, Math.ceil(targetDesertCells / desertWidth));
+        // iterate through grid setting desert biome for each cell
+        for (var i=0; i < desertWidth; i++) {
+            for (var j=2*desertHeight; j<this.grid_map.rows; j++) {
+                this.grid_map.setCellBiome(i, j, 'desert');
             }
         }
     }
@@ -170,6 +261,9 @@ class WorldEnvironment extends Environment{
         this.grid_map.fillGrid(CellStates.empty, !WorldConfig.clear_walls_on_reset);
         this.renderer.renderFullGrid(this.grid_map.grid);
         this.total_mutability = 0;
+        this.total_repro_threshold = 0;
+        this.total_lifespan_factor = 0;
+        this.total_dispersal = 0;
         this.total_ticks = 0;
         this.largest_cell_count = 0;
         FossilRecord.clear_record();

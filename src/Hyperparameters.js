@@ -4,9 +4,21 @@ const Hyperparams = {
     setDefaults: function() {
         this.lifespanMultiplier = 100;
         this.foodProdProb = 5;
+        this.forestBiomeFoodMultiplier = 2; 
+        this.desertBiomeFoodMultiplier = 0.5;
         this.killableNeighbors = Neighbors.adjacent;
         this.edibleNeighbors = Neighbors.adjacent;
         this.growableNeighbors = Neighbors.adjacent;
+
+        // Life history genes. When useGlobalLifeHistory is true every organism
+        // is pinned to the global* values below, which is how control runs andV
+        // re-invasion tests are set up. When false the genes are inherited and
+        // drift by up to lifeHistoryStep percent at every birth.
+        this.useGlobalLifeHistory = false;
+        this.lifeHistoryStep = 3;
+        this.globalReproThreshold = 1.0;
+        this.globalLifespanFactor = 1.0;
+        this.globalDispersal = 1.0;
 
         this.useGlobalMutability = false;
         this.globalMutability = 5;
@@ -37,7 +49,8 @@ const Hyperparams = {
         this.seeThroughSelf = false;
         this.evolveIndependentEyeDecisions = true;
 
-        this.foodDropProb = 0;
+        //this.foodDropProb = 0.01;
+        this.foodDropProb = 0; 
 
         this.mushroomSpawnChance = 0.1; // chance each cell of a dead organism becomes a mushroom instead of food (0 = off)
         this.mushroomFoodValue = 3; // food gained from eating one mushroom (normal food = 1)

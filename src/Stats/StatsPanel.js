@@ -2,15 +2,21 @@ const PopulationChart = require("./Charts/PopulationChart");
 const SpeciesChart = require("./Charts/SpeciesChart");
 const MutationChart = require("./Charts/MutationChart");
 const CellsChart = require("./Charts/CellsChart");
+const LifeHistoryChart = require("./Charts/LifeHistoryChart");
 const FossilRecord = require("./FossilRecord");
+const SpeciesPopulationChart = require("./Charts/SpeciesPopulationChart");
+const TrackingPanel = require("./TrackingPanel");
 const CovidStats = require("./CovidStats");
 
 
 const ChartSelections = [PopulationChart, SpeciesChart, CellsChart, MutationChart];
+ChartSelections.push(SpeciesPopulationChart); // index 4, existing indexes unchanged
+ChartSelections.push(LifeHistoryChart);
 
 class StatsPanel {
     constructor(env) {
         this.defineControls();
+        TrackingPanel.init(() => this.updateChart());
         this.chart_selection = 0;
         this.setChart();
         this.env = env;
@@ -18,6 +24,7 @@ class StatsPanel {
     }
 
     setChart(selection=this.chart_selection) {
+        $('#species-legend').empty(); // only the species chart draws a legend here
         this.chart_controller = new ChartSelections[selection]();
         this.chart_controller.setData();
         this.chart_controller.render();
@@ -61,6 +68,7 @@ class StatsPanel {
         this.last_reset_count = this.env.reset_count;
         this.chart_controller.updateData();
         this.chart_controller.render();
+        TrackingPanel.render();
     }
 
     updateDetails() {
@@ -74,6 +82,11 @@ class StatsPanel {
             $('#top-species').text("Most Populous Species: None");
         $('#largest-org').text("Largest Organism Ever: " + this.env.largest_cell_count + " cells");
         $('#avg-mut').text("Average Mutation Rate: " + Math.round(this.env.averageMutability() * 100) / 100);
+        let lh = this.env.averageLifeHistory();
+        $('#avg-life-history').text("Life History (repro/lifespan/dispersal): "
+            + Math.round(lh.repro_threshold * 1000) / 1000 + " / "
+            + Math.round(lh.lifespan_factor * 1000) / 1000 + " / "
+            + Math.round(lh.dispersal * 1000) / 1000);
         let living = this.env.organisms.length;
         let pct = living > 0 ? Math.round(1000 * CovidStats.infected / living) / 10 : 0;
         $('#covid-infected').text("Infected organisms: " + CovidStats.infected + " (" + pct + "%)");
@@ -86,6 +99,7 @@ class StatsPanel {
 
     reset() {
         this.setChart();
+        TrackingPanel.render();
     }
     
 }
