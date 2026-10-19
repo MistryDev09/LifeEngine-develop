@@ -5,6 +5,7 @@ const Directions = require("./Directions");
 const Anatomy = require("./Anatomy");
 const Brain = require("./Perception/Brain");
 const FossilRecord = require("../Stats/FossilRecord");
+const CovidStats = require("../Stats/CovidStats");
 const SerializeHelper = require("../Utils/SerializeHelper");
 
 // Hard limits on the life history genes. These stop a gene running away to
@@ -85,8 +86,20 @@ class Organism {
         return Math.max(1, Math.ceil(base));
     }
 
+    countCells(state) {
+        let count = 0;
+        for (let cell of this.anatomy.cells) {
+            if (cell.state === state)
+                count++;
+        }
+        return count;
+    }
+
     lifespan() {
-        return Math.max(1, Math.floor(this.anatomy.cells.length * Hyperparams.lifespanMultiplier * this.lifespanFactor()));
+        var lifespan = this.anatomy.cells.length * Hyperparams.lifespanMultiplier * this.lifespanFactor();
+        if (this.anatomy.has_hourglass)
+            lifespan *= Hyperparams.hourglassLifespanMultiplier;
+        return Math.max(1, Math.floor(lifespan));
     }
 
     maxHealth() {
@@ -144,6 +157,8 @@ class Organism {
             org.updateGrid();
             if (mutated) {
                 FossilRecord.addSpecies(org, this.species);
+                if (org.countCells(CellStates.covid) > this.countCells(CellStates.covid))
+                    CovidStats.recordAppearance();
             }
             else {
                 org.species.addPop();
@@ -310,7 +325,7 @@ class Organism {
     }
 
     isPassableCell(cell, parent){
-        return cell != null && (cell.state == CellStates.empty || cell.owner == this || cell.owner == parent || cell.state == CellStates.food);
+        return cell != null && (cell.state == CellStates.empty || cell.owner == this || cell.owner == parent || CellStates.isFood(cell.state));
     }
 
     isClear(col, row, rotation=this.rotation) {
@@ -319,7 +334,7 @@ class Organism {
             if (cell==null) {
                 return false;
             }
-            if (cell.owner==this || cell.state==CellStates.empty || (!Hyperparams.foodBlocksReproduction && cell.state==CellStates.food)){
+            if (cell.owner==this || cell.state==CellStates.empty || (!Hyperparams.foodBlocksReproduction && CellStates.isFood(cell.state))){
                 continue;
             }
             return false;
@@ -338,7 +353,8 @@ class Organism {
         for (var cell of this.anatomy.cells) {
             var real_c = this.c + cell.rotatedCol(this.rotation);
             var real_r = this.r + cell.rotatedRow(this.rotation);
-            this.env.changeCell(real_c, real_r, CellStates.food, null);
+            var remains = Math.random() < Hyperparams.mushroomSpawnChance ? CellStates.mushroom : CellStates.food;
+            this.env.changeCell(real_c, real_r, remains, null);
         }
         this.species.decreasePop();
         this.living = false;
@@ -356,6 +372,10 @@ class Organism {
         this.lifetime++;
         if (this.lifetime > this.lifespan()) {
             this.die();
+            return this.living;
+        }
+        // hourglass organisms age every tick but only act every hourglassSlowdown ticks
+        if (this.anatomy.has_hourglass && this.lifetime % Hyperparams.hourglassSlowdown != 0) {
             return this.living;
         }
         if (this.food_collected >= this.foodNeeded()) {

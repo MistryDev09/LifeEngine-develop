@@ -173,6 +173,7 @@ class Brain {
             };
         }
         decisions[CellStates.food.name].decision = Decision.chase;
+        decisions[CellStates.mushroom.name].decision = Decision.chase;
         decisions[CellStates.killer.name].decision = Decision.retreat;
         return decisions;
     }

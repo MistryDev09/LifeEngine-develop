@@ -4,6 +4,7 @@ const color_schemes = {
     "neon":{
         "empty":"#0E1318",
         "food":"#2F7AB7",
+        "mushroom":"#E52521",
         "wall":"white",
         "mouth":"#DEB14D",
         "producer":"#15DE59",
@@ -11,11 +12,16 @@ const color_schemes = {
         "killer":"#F82380",
         "armor":"#7230DB",
         "eye":"#B6C1EA",
+        "predator":"#FF7A1A",
+        "covid":"#C8FF00",
+        "hourglass":"#F1E3B3",
+        "magnet":"#FF3B3B",
         "eye-slit": "#0E1318"
     },
     "classic":{
         "empty":"#121D29",
         "food":"green",
+        "mushroom":"red",
         "wall":"gray",
         "mouth":"orange",
         "producer":"pink",
@@ -23,11 +29,16 @@ const color_schemes = {
         "killer":"red",
         "armor":"purple",
         "eye":"yellow",
+        "predator":"brown",
+        "covid":"lime",
+        "hourglass":"khaki",
+        "magnet":"crimson",
         "eye-slit": "#121D29"
     },
     "soft":{
         "empty":"#0B0E11",
         "food":"#4F86B2",
+        "mushroom":"#C0504D",
         "wall":"#5F6F78",
         "mouth":"#B89A6A",
         "producer":"#4EA17B",
@@ -35,11 +46,16 @@ const color_schemes = {
         "killer":"#B06B85",
         "armor":"#7C69B5",
         "eye":"#AEB4C2",
+        "predator":"#C47A4A",
+        "covid":"#A8C256",
+        "hourglass":"#CFC29A",
+        "magnet":"#B5525A",
         "eye-slit": "#0B0E11"
     },
     "dark":{
         "empty":"black",
         "food":"#225986",
+        "mushroom":"#A8322D",
         "wall":"#56616E",
         "mouth":"#AD8A45",
         "producer":"#198D4F",
@@ -47,11 +63,16 @@ const color_schemes = {
         "killer":"#992E5E",
         "armor":"#5632B5",
         "eye":"#8892B3",
+        "predator":"#B3561E",
+        "covid":"#7FA31A",
+        "hourglass":"#A8996B",
+        "magnet":"#992B33",
         "eye-slit": "black"
     },
     "grayscale":{
         "empty":"black",
         "food":"#777777",
+        "mushroom":"#DDDDDD",
         "wall":"#EEEEEE",
         "mouth":"#FFFFFF",
         "producer":"#CCCCCC",
@@ -59,6 +80,10 @@ const color_schemes = {
         "killer":"#AAAAAA",
         "armor":"#999999",
         "eye":"#888888",
+        "predator":"#666666",
+        "covid":"#444444",
+        "hourglass":"#D5D5D5",
+        "magnet":"#5A5A5A",
         "eye-slit": "black"
     }
 }

@@ -6,6 +6,7 @@ const CellStates = require('../Organism/Cell/CellStates');
 const EnvironmentController = require('../Controllers/EnvironmentController');
 const Hyperparams = require('../Hyperparameters.js');
 const FossilRecord = require('../Stats/FossilRecord');
+const CovidStats = require('../Stats/CovidStats');
 const WorldConfig = require('../WorldConfig');
 const SerializeHelper = require('../Utils/SerializeHelper');
 const Species = require('../Stats/Species');
@@ -32,6 +33,7 @@ class WorldEnvironment extends Environment{
         this.total_ticks = 0;
         this.data_update_rate = 100;
         FossilRecord.setEnv(this);
+        CovidStats.setEnv(this);
     }
 
     update() {
@@ -47,6 +49,7 @@ class WorldEnvironment extends Environment{
             this.generateFood();
         }
         this.total_ticks ++;
+        CovidStats.update();
         if (this.total_ticks % this.data_update_rate == 0) {
             FossilRecord.updateData();
         }
@@ -247,6 +250,7 @@ class WorldEnvironment extends Environment{
     reset(confirm_reset=true, reset_life=true) {
         if (confirm_reset && !confirm('The current environment will be lost. Proceed?'))
             return false;
+        CovidStats.worldReset();
         let restart = false;
         if (this.engine.running) {
             this.engine.last_fps = this.engine.fps;

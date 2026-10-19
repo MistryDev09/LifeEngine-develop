@@ -61,7 +61,12 @@
 							<div class='cell-legend-type' id='killer' title="Killer: Harms organisms in adjacent cells."></div>
 							<div class='cell-legend-type' id='armor' title="Armor: Negates affects of killer cell."></div>
 							<div class='cell-legend-type' id='eye' title="Eye: Observes cells and decides movement."></div>
+							<div class='cell-legend-type' id='predator' title="Predator: Instantly kills adjacent organisms at most half its organism's size (max 12 cells)."></div>
+							<div class='cell-legend-type' id='covid' title="Covid-19: A rare parasite. Infects touching cells of other organisms, destroying their function. Passed on to offspring."></div>
+							<div class='cell-legend-type' id='hourglass' title="Hourglass: The organism lives twice as long, but only acts every other tick."></div>
+							<div class='cell-legend-type' id='magnet' title="Magnet: Pulls loose food and mushrooms within 2 cells toward it (each piece has a 25% chance per tick)."></div>
 							<div class='cell-legend-type' id='food' title="Food: Not part of an organism. Once an organism has eaten enough food, it will reproduce."></div>
+							<div class='cell-legend-type' id='mushroom' title="Mushroom: Sometimes grows where an organism died. Worth 3x as much as normal food."></div>
 							<div class='cell-legend-type' id='wall' title="Wall: Not part of an organism. Blocks movement and reproduction."></div>
 						</div>
 						<div id="color-scheme-container">
@@ -98,11 +103,15 @@
 								<div class='cell-type' id='mouth' title="Mouth: Eats adjacent food."></div>
 								<div class='cell-type' id='producer' title="Producer: Produces adjacent food."></div>
 								<div class='cell-type' id='mover' title="Mover: Allows for movement and rotation."></div>
+								<div class='cell-type' id='hourglass' title="Hourglass: The organism lives twice as long, but only acts every other tick."></div>
+								<div class='cell-type' id='magnet' title="Magnet: Pulls loose food and mushrooms within 2 cells toward it (each piece has a 25% chance per tick)."></div>
 							</div>
 							<div style='grid-column: 2;'>
 								<div class='cell-type' id='killer' title="Killer: Harms organisms in adjacent cells."></div>
 								<div class='cell-type' id='armor' title="Armor: Unharmed by killer cell."></div>
 								<div class='cell-type' id='eye' title="Eye: Looks for cells to move away from or towards. Click again on a placed cell to rotate"></div>
+								<div class='cell-type' id='predator' title="Predator: Instantly kills adjacent organisms at most half its organism's size (max 12 cells)."></div>
+								<div class='cell-type' id='covid' title="Covid-19: A rare parasite. Infects touching cells of other organisms, destroying their function. Passed on to offspring."></div>
 							</div>
 
 							<button id='clear-editor'>Clear</button>
@@ -268,6 +277,15 @@
 						<p id='largest-org'>Largest Organism Ever: </p>
 						<p id='avg-mut'>Average Mutation Rate: </p>
 						<p id='avg-life-history'>Life History (repro/lifespan/dispersal): </p>
+						<h3 title="Counts for the current world. Outbreaks and CSV data are kept across world resets until cleared.">Covid-19</h3>
+						<p id='covid-infected'>Infected organisms: </p>
+						<p id='covid-appearances' title="Infected newborns created by mutation">Appearances by mutation: </p>
+						<p id='covid-infections' title="Cells converted by touching a covid cell">Contact infections: </p>
+						<p id='covid-deaths' title="Organisms killed for having too many covid cells">Deaths from covid: </p>
+						<p id='covid-outbreaks' title="An outbreak starts when infected organisms go from 0 to 1+, and ends when none are left">Outbreaks recorded: </p>
+						<button id='covid-download-series' title="Population and infection counts every 100 ticks">Download time series (CSV)</button>
+						<button id='covid-download-outbreaks' title="One row per outbreak: start, end, peak, infections, deaths">Download outbreak log (CSV)</button>
+						<button id='covid-clear'>Clear covid data</button>
 						<label for="chart-option">Chart: </label>
 						<select name="chart-option" id="chart-option">
 							<option value="population">Population</option>
