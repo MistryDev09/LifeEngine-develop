@@ -12,6 +12,7 @@ const color_schemes = {
         "armor":"#7230DB",
         "eye":"#B6C1EA",
         "predator":"#FF7A1A",
+        "covid":"#C8FF00",
         "eye-slit": "#0E1318"
     },
     "classic":{
@@ -25,6 +26,7 @@ const color_schemes = {
         "armor":"purple",
         "eye":"yellow",
         "predator":"brown",
+        "covid":"lime",
         "eye-slit": "#121D29"
     },
     "soft":{
@@ -38,6 +40,7 @@ const color_schemes = {
         "armor":"#7C69B5",
         "eye":"#AEB4C2",
         "predator":"#C47A4A",
+        "covid":"#A8C256",
         "eye-slit": "#0B0E11"
     },
     "dark":{
@@ -51,6 +54,7 @@ const color_schemes = {
         "armor":"#5632B5",
         "eye":"#8892B3",
         "predator":"#B3561E",
+        "covid":"#7FA31A",
         "eye-slit": "black"
     },
     "grayscale":{
@@ -64,6 +68,7 @@ const color_schemes = {
         "armor":"#999999",
         "eye":"#888888",
         "predator":"#666666",
+        "covid":"#444444",
         "eye-slit": "black"
     }
 }

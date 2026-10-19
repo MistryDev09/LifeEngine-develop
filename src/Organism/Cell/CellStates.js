@@ -1,8 +1,11 @@
+const Hyperparams = require("../../Hyperparameters");
+
 // A cell state is used to differentiate type and render the cell
 class CellState{
     constructor(name) {
         this.name = name;
         this.color = 'black';
+        this.weight = 1; // relative chance of being picked by mutation
     }
 
     render(ctx, cell, size) {
@@ -56,6 +59,14 @@ class Predator extends CellState {
         super('predator');
     }
 }
+class Covid extends CellState {
+    constructor() {
+        super('covid');
+    }
+    // rarity is tunable from Hyperparameters
+    get weight() { return Hyperparams.covidWeight; }
+    set weight(w) {}
+}
 class Eye extends CellState {
     constructor() {
         super('eye');
@@ -90,15 +101,24 @@ const CellStates = {
     armor: new Armor(),
     eye: new Eye(),
     predator: new Predator(),
+    covid: new Covid(),
     defineLists() {
-        this.all = [this.empty, this.food, this.wall, this.mouth, this.producer, this.mover, this.killer, this.armor, this.eye, this.predator]
-        this.living = [this.mouth, this.producer, this.mover, this.killer, this.armor, this.eye, this.predator];
+        this.all = [this.empty, this.food, this.wall, this.mouth, this.producer, this.mover, this.killer, this.armor, this.eye, this.predator, this.covid]
+        this.living = [this.mouth, this.producer, this.mover, this.killer, this.armor, this.eye, this.predator, this.covid];
     },
     getRandomName: function() {
         return this.all[Math.floor(Math.random() * this.all.length)].name;
     },
     getRandomLivingType: function() {
-        return this.living[Math.floor(Math.random() * this.living.length)];
+        // weighted pick: each type's chance is proportional to its weight
+        let total = 0;
+        for (const c of this.living) total += c.weight;
+        let roll = Math.random() * total;
+        for (const c of this.living) {
+            roll -= c.weight;
+            if (roll < 0) return c;
+        }
+        return this.living[this.living.length - 1]; // floating-point safety net
     }
 }
 

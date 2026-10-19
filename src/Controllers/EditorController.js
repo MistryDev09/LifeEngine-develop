@@ -121,6 +121,9 @@ class EditorController extends CanvasController{
                 case "predator":
                     self.edit_cell_type = CellStates.predator;
                     break;
+                case "covid":
+                    self.edit_cell_type = CellStates.covid;
+                    break;
             }
             $(".cell-type" ).css( "border-color", "black" );
             var selected = '#'+this.id+'.cell-type';
