@@ -25,8 +25,9 @@ const Hyperparams = {
         this.dontKillSameSpecies = false;
         this.predatorSizeRatio = 0.5;
         this.predatorMaxPreySize = 12;
-        this.covidWeight = 0.1; // mutation weight relative to a normal cell (1)
+        this.covidWeight = 0.005; // mutation weight relative to a normal cell (1)
         this.covidInfectChance = 0.1; // per touching cell, per tick
+        this.covidLethalFraction = 0.75; // host dies when more than this fraction of its cells are covid
 
         this.lookRange = 30;
         this.seeThroughSelf = false;
