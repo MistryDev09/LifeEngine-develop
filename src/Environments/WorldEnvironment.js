@@ -48,6 +48,7 @@ class WorldEnvironment extends Environment{
             FossilRecord.updateData();
         }
         var count = this.countFoodByRegion();
+        console.log("Generating food... ticks: " + this.total_ticks);
         console.log("Forest food: " + count.forest_food);
         console.log("Desert food: " + count.desert_food);
         console.log("Normal food: " + count.normal_food);
