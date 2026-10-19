@@ -28,9 +28,10 @@ const CovidStats = {
         this.current = null;  // the outbreak in progress, if any
     },
 
-    // called when the world is reset: close any open outbreak and start a new world number
+    // called when the world is reset: close any open outbreak and start a new world number.
+    // An auto reset happens once every organism has died, so an empty world means extinction.
     worldReset() {
-        this.endOutbreak('world reset');
+        this.endOutbreak(this.env.organisms.length === 0 ? 'extinction' : 'manual reset');
         this.resetCounters();
         this.world++;
     },
@@ -65,20 +66,26 @@ const CovidStats = {
         this.current.appearances++;
     },
 
+    // infections and deaths can happen in the same tick covid first appears, before update() runs
     recordInfection() {
         this.infections++;
-        if (this.current) this.current.infections++;
+        if (!this.current) this.startOutbreak('placed');
+        this.current.infections++;
     },
 
     recordDeath() {
         this.deaths++;
-        if (this.current) this.current.deaths++;
+        if (!this.current) this.startOutbreak('placed');
+        this.current.deaths++;
     },
 
+    // returns [living organisms, infected organisms]; dead organisms stay in the list until the next tick
     countInfected() {
+        let living = 0;
         let infected = 0;
         for (let org of this.env.organisms) {
             if (!org.living) continue;
+            living++;
             for (let cell of org.anatomy.cells) {
                 if (cell.state === CellStates.covid) {
                     infected++;
@@ -86,13 +93,13 @@ const CovidStats = {
                 }
             }
         }
-        return infected;
+        return [living, infected];
     },
 
     // called once per tick, after organisms have updated
     update() {
-        this.infected = this.countInfected();
-        let living = this.env.organisms.length;
+        let [living, infected] = this.countInfected();
+        this.infected = infected;
         if (this.infected > 0 && !this.current)
             this.startOutbreak('placed'); // e.g. dropped in from the editor
         if (this.current) {

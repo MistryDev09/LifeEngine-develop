@@ -3,6 +3,7 @@ const SpeciesChart = require("./Charts/SpeciesChart");
 const MutationChart = require("./Charts/MutationChart");
 const CellsChart = require("./Charts/CellsChart");
 const FossilRecord = require("./FossilRecord");
+const CovidStats = require("./CovidStats");
 
 
 const ChartSelections = [PopulationChart, SpeciesChart, CellsChart, MutationChart];
@@ -36,6 +37,21 @@ class StatsPanel {
             this.chart_selection = $("#chart-option")[0].selectedIndex;
             this.setChart();
         }.bind(this));
+        $('#covid-download-series').click(() => this.download('covid_timeseries.csv', CovidStats.seriesCSV()));
+        $('#covid-download-outbreaks').click(() => this.download('covid_outbreaks.csv', CovidStats.outbreaksCSV()));
+        $('#covid-clear').click(() => {
+            if (confirm('Clear all recorded covid data?'))
+                CovidStats.clear();
+        });
+    }
+
+    download(filename, text) {
+        const url = URL.createObjectURL(new Blob([text], {type: 'text/csv'}));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(url);
     }
 
     updateChart() {
@@ -58,6 +74,14 @@ class StatsPanel {
             $('#top-species').text("Most Populous Species: None");
         $('#largest-org').text("Largest Organism Ever: " + this.env.largest_cell_count + " cells");
         $('#avg-mut').text("Average Mutation Rate: " + Math.round(this.env.averageMutability() * 100) / 100);
+        let living = this.env.organisms.length;
+        let pct = living > 0 ? Math.round(1000 * CovidStats.infected / living) / 10 : 0;
+        $('#covid-infected').text("Infected organisms: " + CovidStats.infected + " (" + pct + "%)");
+        $('#covid-appearances').text("Appearances by mutation: " + CovidStats.appearances);
+        $('#covid-infections').text("Contact infections: " + CovidStats.infections);
+        $('#covid-deaths').text("Deaths from covid: " + CovidStats.deaths);
+        let ongoing = CovidStats.current ? " (outbreak #" + CovidStats.current.id + " ongoing)" : "";
+        $('#covid-outbreaks').text("Outbreaks recorded: " + CovidStats.outbreaks.length + ongoing);
     }
 
     reset() {

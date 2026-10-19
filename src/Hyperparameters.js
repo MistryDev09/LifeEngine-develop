@@ -28,6 +28,10 @@ const Hyperparams = {
         this.covidWeight = 0.005; // mutation weight relative to a normal cell (1)
         this.covidInfectChance = 0.1; // per touching cell, per tick
         this.covidLethalFraction = 0.75; // host dies when more than this fraction of its cells are covid
+        this.hourglassLifespanMultiplier = 2; // organisms with an hourglass live this many times longer...
+        this.hourglassSlowdown = 2; // ...but only act once every this many ticks
+        this.magnetRadius = 2; // how far a magnet cell reaches for food
+        this.magnetPullChance = 0.25; // chance per food, per tick, of being pulled one step closer
 
         this.lookRange = 30;
         this.seeThroughSelf = false;

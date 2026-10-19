@@ -14,6 +14,8 @@ const color_schemes = {
         "eye":"#B6C1EA",
         "predator":"#FF7A1A",
         "covid":"#C8FF00",
+        "hourglass":"#F1E3B3",
+        "magnet":"#FF3B3B",
         "eye-slit": "#0E1318"
     },
     "classic":{
@@ -29,6 +31,8 @@ const color_schemes = {
         "eye":"yellow",
         "predator":"brown",
         "covid":"lime",
+        "hourglass":"khaki",
+        "magnet":"crimson",
         "eye-slit": "#121D29"
     },
     "soft":{
@@ -44,6 +48,8 @@ const color_schemes = {
         "eye":"#AEB4C2",
         "predator":"#C47A4A",
         "covid":"#A8C256",
+        "hourglass":"#CFC29A",
+        "magnet":"#B5525A",
         "eye-slit": "#0B0E11"
     },
     "dark":{
@@ -59,6 +65,8 @@ const color_schemes = {
         "eye":"#8892B3",
         "predator":"#B3561E",
         "covid":"#7FA31A",
+        "hourglass":"#A8996B",
+        "magnet":"#992B33",
         "eye-slit": "black"
     },
     "grayscale":{
@@ -74,6 +82,8 @@ const color_schemes = {
         "eye":"#888888",
         "predator":"#666666",
         "covid":"#444444",
+        "hourglass":"#D5D5D5",
+        "magnet":"#5A5A5A",
         "eye-slit": "black"
     }
 }

@@ -6,6 +6,8 @@ const ArmorCell = require("./ArmorCell");
 const EyeCell = require("./EyeCell");
 const PredatorCell = require("./PredatorCell");
 const CovidCell = require("./CovidCell");
+const HourglassCell = require("./HourglassCell");
+const MagnetCell = require("./MagnetCell");
 const CellStates = require("../CellStates");
 
 
@@ -20,6 +22,8 @@ const BodyCellFactory = {
         type_map[CellStates.eye.name] = EyeCell;
         type_map[CellStates.predator.name] = PredatorCell;
         type_map[CellStates.covid.name] = CovidCell;
+        type_map[CellStates.hourglass.name] = HourglassCell;
+        type_map[CellStates.magnet.name] = MagnetCell;
         this.type_map = type_map;
     },
 

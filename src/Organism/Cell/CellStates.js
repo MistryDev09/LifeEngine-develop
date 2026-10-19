@@ -120,6 +120,42 @@ class Covid extends CellState {
     get weight() { return Hyperparams.covidWeight; }
     set weight(w) {}
 }
+// draws a 5x5 sprite scaled to the cell; letters map to colors, '.' shows the empty background
+function renderSprite(ctx, cell, size, sprite, colors) {
+    ctx.fillStyle = CellStates.empty.color;
+    ctx.fillRect(cell.x, cell.y, size, size);
+    var px = size / sprite.length;
+    for (var row = 0; row < sprite.length; row++) {
+        for (var col = 0; col < sprite[row].length; col++) {
+            var color = colors[sprite[row][col]];
+            if (!color) continue;
+            ctx.fillStyle = color;
+            ctx.fillRect(Math.floor(cell.x + col*px), Math.floor(cell.y + row*px), Math.ceil(px), Math.ceil(px));
+        }
+    }
+}
+const HOURGLASS_SPRITE = ["FFFFF", ".CCC.", "..C..", ".CCC.", "FFFFF"];
+class Hourglass extends CellState {
+    constructor() {
+        super('hourglass');
+        this.frame_color = '#8A6A3A';
+    }
+    render(ctx, cell, size) {
+        if (size < 5) return super.render(ctx, cell, size);
+        renderSprite(ctx, cell, size, HOURGLASS_SPRITE, {C: this.color, F: this.frame_color});
+    }
+}
+const MAGNET_SPRITE = ["T...T", "M...M", "M...M", "MMMMM", ".MMM."];
+class Magnet extends CellState {
+    constructor() {
+        super('magnet');
+        this.tip_color = '#D9D9D9';
+    }
+    render(ctx, cell, size) {
+        if (size < 5) return super.render(ctx, cell, size);
+        renderSprite(ctx, cell, size, MAGNET_SPRITE, {M: this.color, T: this.tip_color});
+    }
+}
 class Eye extends CellState {
     constructor() {
         super('eye');
@@ -156,9 +192,11 @@ const CellStates = {
     eye: new Eye(),
     predator: new Predator(),
     covid: new Covid(),
+    hourglass: new Hourglass(),
+    magnet: new Magnet(),
     defineLists() {
-        this.all = [this.empty, this.food, this.mushroom, this.wall, this.mouth, this.producer, this.mover, this.killer, this.armor, this.eye, this.predator, this.covid]
-        this.living = [this.mouth, this.producer, this.mover, this.killer, this.armor, this.eye, this.predator, this.covid];
+        this.all = [this.empty, this.food, this.mushroom, this.wall, this.mouth, this.producer, this.mover, this.killer, this.armor, this.eye, this.predator, this.covid, this.hourglass, this.magnet]
+        this.living = [this.mouth, this.producer, this.mover, this.killer, this.armor, this.eye, this.predator, this.covid, this.hourglass, this.magnet];
     },
     isFood: function(state) {
         return state === this.food || state === this.mushroom;

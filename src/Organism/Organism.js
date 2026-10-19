@@ -5,6 +5,7 @@ const Directions = require("./Directions");
 const Anatomy = require("./Anatomy");
 const Brain = require("./Perception/Brain");
 const FossilRecord = require("../Stats/FossilRecord");
+const CovidStats = require("../Stats/CovidStats");
 const SerializeHelper = require("../Utils/SerializeHelper");
 
 class Organism {
@@ -45,8 +46,20 @@ class Organism {
         return this.anatomy.is_mover ? this.anatomy.cells.length + Hyperparams.extraMoverFoodCost : this.anatomy.cells.length;
     }
 
+    countCells(state) {
+        let count = 0;
+        for (let cell of this.anatomy.cells) {
+            if (cell.state === state)
+                count++;
+        }
+        return count;
+    }
+
     lifespan() {
-        return this.anatomy.cells.length * Hyperparams.lifespanMultiplier;
+        var lifespan = this.anatomy.cells.length * Hyperparams.lifespanMultiplier;
+        if (this.anatomy.has_hourglass)
+            lifespan *= Hyperparams.hourglassLifespanMultiplier;
+        return lifespan;
     }
 
     maxHealth() {
@@ -97,6 +110,8 @@ class Organism {
             org.updateGrid();
             if (mutated) {
                 FossilRecord.addSpecies(org, this.species);
+                if (org.countCells(CellStates.covid) > this.countCells(CellStates.covid))
+                    CovidStats.recordAppearance();
             }
             else {
                 org.species.addPop();
@@ -310,6 +325,10 @@ class Organism {
         this.lifetime++;
         if (this.lifetime > this.lifespan()) {
             this.die();
+            return this.living;
+        }
+        // hourglass organisms age every tick but only act every hourglassSlowdown ticks
+        if (this.anatomy.has_hourglass && this.lifetime % Hyperparams.hourglassSlowdown != 0) {
             return this.living;
         }
         if (this.food_collected >= this.foodNeeded()) {

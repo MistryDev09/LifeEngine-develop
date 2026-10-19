@@ -1,6 +1,7 @@
 const CellStates = require("../CellStates");
 const BodyCell = require("./BodyCell");
 const Hyperparams = require("../../../Hyperparameters");
+const CovidStats = require("../../../Stats/CovidStats");
 
 // Covid-19: a pure parasite. Does nothing for its host, but each tick it may convert
 // a touching cell of another organism into a covid cell, destroying that cell's function.
@@ -13,6 +14,7 @@ class CovidCell extends BodyCell{
 
     performFunction() {
         if (this.hostOverwhelmed()) {
+            CovidStats.recordDeath();
             this.org.die();
             return;
         }
@@ -45,6 +47,7 @@ class CovidCell extends BodyCell{
         var body_cell = n_cell.cell_owner;
         var new_cell = victim.anatomy.replaceCell(CellStates.covid, body_cell.loc_col, body_cell.loc_row, false);
         env.changeCell(n_cell.col, n_cell.row, CellStates.covid, new_cell);
+        CovidStats.recordInfection();
     }
 }
 
