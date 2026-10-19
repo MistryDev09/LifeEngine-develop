@@ -24,6 +24,10 @@ class MouthCell extends BodyCell{
             env.changeCell(n_cell.col, n_cell.row, CellStates.empty, null);
             this.org.food_collected++;
         }
+        else if (n_cell.state == CellStates.mushroom){
+            env.changeCell(n_cell.col, n_cell.row, CellStates.empty, null);
+            this.org.food_collected += Hyperparams.mushroomFoodValue;
+        }
     }
 }
 

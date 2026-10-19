@@ -85,10 +85,14 @@ class GridMap {
         // list is loaded. This reduces filesize and complexity.
         let grid = {cell_size:this.cell_size, cols:this.cols, rows:this.rows};
         grid.food = [];
+        grid.mushrooms = [];
         grid.walls = [];
         for (let col of this.grid) {
             for (let cell of col) {
-                if (cell.state===CellStates.wall || cell.state===CellStates.food){
+                if (cell.state===CellStates.mushroom) {
+                    grid.mushrooms.push({c: cell.col, r: cell.row});
+                }
+                else if (cell.state===CellStates.wall || cell.state===CellStates.food){
                     let c = {c: cell.col, r: cell.row}; // no need to store state
                     if (cell.state===CellStates.food)
                         grid.food.push(c)
@@ -103,6 +107,8 @@ class GridMap {
     loadRaw(grid) {
         for (let f of grid.food)
             this.setCellType(f.c, f.r, CellStates.food);
+        for (let m of grid.mushrooms || []) // older saves have no mushrooms
+            this.setCellType(m.c, m.r, CellStates.mushroom);
         for (let w of grid.walls)
             this.setCellType(w.c, w.r, CellStates.wall);
     }

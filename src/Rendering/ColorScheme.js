@@ -4,6 +4,7 @@ const color_schemes = {
     "neon":{
         "empty":"#0E1318",
         "food":"#2F7AB7",
+        "mushroom":"#E52521",
         "wall":"white",
         "mouth":"#DEB14D",
         "producer":"#15DE59",
@@ -18,6 +19,7 @@ const color_schemes = {
     "classic":{
         "empty":"#121D29",
         "food":"green",
+        "mushroom":"red",
         "wall":"gray",
         "mouth":"orange",
         "producer":"pink",
@@ -32,6 +34,7 @@ const color_schemes = {
     "soft":{
         "empty":"#0B0E11",
         "food":"#4F86B2",
+        "mushroom":"#C0504D",
         "wall":"#5F6F78",
         "mouth":"#B89A6A",
         "producer":"#4EA17B",
@@ -46,6 +49,7 @@ const color_schemes = {
     "dark":{
         "empty":"black",
         "food":"#225986",
+        "mushroom":"#A8322D",
         "wall":"#56616E",
         "mouth":"#AD8A45",
         "producer":"#198D4F",
@@ -60,6 +64,7 @@ const color_schemes = {
     "grayscale":{
         "empty":"black",
         "food":"#777777",
+        "mushroom":"#DDDDDD",
         "wall":"#EEEEEE",
         "mouth":"#FFFFFF",
         "producer":"#CCCCCC",

@@ -35,6 +35,9 @@ const Hyperparams = {
 
         this.foodDropProb = 0;
 
+        this.mushroomSpawnChance = 0.1; // chance each cell of a dead organism becomes a mushroom instead of food (0 = off)
+        this.mushroomFoodValue = 3; // food gained from eating one mushroom (normal food = 1)
+
         this.extraMoverFoodCost = 0;
 
         this.maxOrganisms = -1;

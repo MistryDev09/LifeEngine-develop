@@ -24,6 +24,59 @@ class Food extends CellState {
         super('food');
     }
 }
+// Rich food that sometimes grows where an organism died. Worth Hyperparams.mushroomFoodValue food.
+// R = cap (scheme color), W = spot, S = stem, B = eye, . = background
+const MUSHROOM_SPRITE = [
+    "..RWWR..",
+    ".RRWWRR.",
+    "RWRRRRWR",
+    "WWRRRRWW",
+    "RRRRRRRR",
+    ".SBSSBS.",
+    ".SBSSBS.",
+    "..SSSS..",
+];
+class Mushroom extends CellState {
+    constructor() {
+        super('mushroom');
+        this.spot_color = 'white';
+        this.stem_color = '#F2E2C4';
+        this.eye_color = 'black';
+    }
+    render(ctx, cell, size) {
+        if (size < 3) {
+            ctx.fillStyle = this.color;
+            ctx.fillRect(cell.x, cell.y, size, size);
+            return;
+        }
+        ctx.fillStyle = CellStates.empty.color;
+        ctx.fillRect(cell.x, cell.y, size, size);
+        if (size < 8) {
+            // simplified: cap on top with two spots, stem below
+            var cap_h = Math.ceil(size * 0.6);
+            ctx.fillStyle = this.color;
+            ctx.fillRect(cell.x, cell.y, size, cap_h);
+            ctx.fillStyle = this.spot_color;
+            ctx.fillRect(cell.x + 1, cell.y + 1, 1, 1);
+            ctx.fillRect(cell.x + size - 2, cell.y + 1, 1, 1);
+            ctx.fillStyle = this.stem_color;
+            var stem_w = Math.max(1, Math.round(size * 0.4));
+            ctx.fillRect(cell.x + Math.round((size - stem_w) / 2), cell.y + cap_h, stem_w, size - cap_h);
+            return;
+        }
+        // full pixel-art mushroom
+        var px = size / 8;
+        var colors = {R: this.color, W: this.spot_color, S: this.stem_color, B: this.eye_color};
+        for (var row = 0; row < 8; row++) {
+            for (var col = 0; col < 8; col++) {
+                var color = colors[MUSHROOM_SPRITE[row][col]];
+                if (!color) continue;
+                ctx.fillStyle = color;
+                ctx.fillRect(Math.floor(cell.x + col*px), Math.floor(cell.y + row*px), Math.ceil(px), Math.ceil(px));
+            }
+        }
+    }
+}
 class Wall extends CellState {
     constructor() {
         super('wall');
@@ -93,6 +146,7 @@ class Eye extends CellState {
 const CellStates = {
     empty: new Empty(),
     food: new Food(),
+    mushroom: new Mushroom(),
     wall: new Wall(),
     mouth: new Mouth(),
     producer: new Producer(),
@@ -103,8 +157,11 @@ const CellStates = {
     predator: new Predator(),
     covid: new Covid(),
     defineLists() {
-        this.all = [this.empty, this.food, this.wall, this.mouth, this.producer, this.mover, this.killer, this.armor, this.eye, this.predator, this.covid]
+        this.all = [this.empty, this.food, this.mushroom, this.wall, this.mouth, this.producer, this.mover, this.killer, this.armor, this.eye, this.predator, this.covid]
         this.living = [this.mouth, this.producer, this.mover, this.killer, this.armor, this.eye, this.predator, this.covid];
+    },
+    isFood: function(state) {
+        return state === this.food || state === this.mushroom;
     },
     getRandomName: function() {
         return this.all[Math.floor(Math.random() * this.all.length)].name;

@@ -263,7 +263,7 @@ class Organism {
     }
 
     isPassableCell(cell, parent){
-        return cell != null && (cell.state == CellStates.empty || cell.owner == this || cell.owner == parent || cell.state == CellStates.food);
+        return cell != null && (cell.state == CellStates.empty || cell.owner == this || cell.owner == parent || CellStates.isFood(cell.state));
     }
 
     isClear(col, row, rotation=this.rotation) {
@@ -272,7 +272,7 @@ class Organism {
             if (cell==null) {
                 return false;
             }
-            if (cell.owner==this || cell.state==CellStates.empty || (!Hyperparams.foodBlocksReproduction && cell.state==CellStates.food)){
+            if (cell.owner==this || cell.state==CellStates.empty || (!Hyperparams.foodBlocksReproduction && CellStates.isFood(cell.state))){
                 continue;
             }
             return false;
@@ -291,7 +291,8 @@ class Organism {
         for (var cell of this.anatomy.cells) {
             var real_c = this.c + cell.rotatedCol(this.rotation);
             var real_r = this.r + cell.rotatedRow(this.rotation);
-            this.env.changeCell(real_c, real_r, CellStates.food, null);
+            var remains = Math.random() < Hyperparams.mushroomSpawnChance ? CellStates.mushroom : CellStates.food;
+            this.env.changeCell(real_c, real_r, remains, null);
         }
         this.species.decreasePop();
         this.living = false;
