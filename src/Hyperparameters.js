@@ -23,6 +23,8 @@ const Hyperparams = {
 
         this.instaKill = false;
         this.dontKillSameSpecies = false;
+        this.predatorSizeRatio = 0.5;
+        this.predatorMaxPreySize = 12;
 
         this.lookRange = 30;
         this.seeThroughSelf = false;
