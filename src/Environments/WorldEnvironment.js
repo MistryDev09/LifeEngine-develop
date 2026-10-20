@@ -54,6 +54,7 @@ class WorldEnvironment extends Environment{
             FossilRecord.updateData();
         }
         var count = this.countFoodByRegion();
+        console.log("Generating food... ticks: " + this.total_ticks);
         console.log("Forest food: " + count.forest_food);
         console.log("Desert food: " + count.desert_food);
         console.log("Normal food: " + count.normal_food);
@@ -180,7 +181,7 @@ class WorldEnvironment extends Environment{
     }
 
     generateFood() {
-        console.log("Generating food... ticks: " + this.total_ticks);
+        
         var num_food = Math.max(Math.floor(this.grid_map.cols*this.grid_map.rows*Hyperparams.foodDropProb/50000), 1)
       
         for (var i=0; i<num_food; i++) {
