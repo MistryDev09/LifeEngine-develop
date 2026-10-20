@@ -1,4 +1,4 @@
-<img width="1948" height="62" alt="image" src="https://github.com/user-attachments/assets/0dc0770a-db4d-498c-89a8-ec2f0860452e" />This is the readme for the changes made to the Life Engine evolution simulator. 
+This is the readme for the changes made to the Life Engine evolution simulator. 
 
 # The Life Engine Changes
 
