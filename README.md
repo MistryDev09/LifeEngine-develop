@@ -9,6 +9,15 @@ This is the readme for the changes made to the Life Engine evolution simulator.
 - added in counters (in console) to track amount of food in each biome
 
 # Devak
+- New files (in src/Stats/)
+- SpeciesTracker.js - stores the species, population history and parents and children. Also tracks individual species if chosen
+- TrackingPanel.js - displays the species and population history in a chart. Also displays the family tree of the tracked species.
+- OrganismPicture.js - draws the organism picture
+- Charts/SpeciesPopulationChart.js - draws the population history chart with the legend being the pictures of the organisms
+
+Added hooks in FossilRecod.js to update the species tracker and tracking panel when a new species is created or when a species goes extinct.
+added hooks in StatsPanel.j to update the chart on new data and reset
+
 
 # Jaylyn
 - Added in 5 new cell types:
